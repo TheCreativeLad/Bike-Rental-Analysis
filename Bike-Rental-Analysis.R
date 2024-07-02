@@ -61,14 +61,13 @@ month_counts$mnth <- factor(month_counts$mnth,
                             levels =  c(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12), 
                             labels =  c("Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"))
 
+## Bar Chart for the Bycicles Rented in each month
 ggplot(month_counts, aes(x = mnth, y = cnt, fill = mnth)) +
   geom_bar(stat = "identity") +
   labs(x = "Months", y = "Total Bicycles Rented", title = "Total Bicycles rented in each Month")
 
-wind_speed <- day %>% 
-  group_by(mnth) %>% 
-  summarise(cnt = sum(cnt))
 
+## Plotting the relationship between Windspeed and Bycicles Rented
 ggplot(day, aes(x = cnt, y = windspeed)) +
   geom_point(stat = "identity", position = "identity", color = "brown") +
   stat_regline_equation(formula = windspeed ~ cnt, position = "identity") +
