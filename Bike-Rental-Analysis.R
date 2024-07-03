@@ -76,6 +76,33 @@ ggplot(workingday_group, aes(x = workingday, y = cnt, fill = workingday)) +
   geom_bar(stat = "identity") +
   labs(x = "WorkingDay", y = "bicycle Rented", title = "Bicycles Rented vs Working Day/Not Working Day")
 
+## The effect of the weather temperature on the Bicycles rented
+# checking for the relationship
+ggplot(day, aes(x = atemp, y = cnt)) +
+  geom_point(stat = "identity", color = "brown") +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(formula = cnt ~ atemp, position = "identity") +
+  labs(title = "The effect of Weather Temperature on the Bicycles Rented", x = "Weather Temperature", y = "Bicyces Rented")
+
+# Analyzing the relationship between weather temperature and the Bicycles rented using linear model
+fit <- lm(cnt ~ atemp)
+summary(fit)
+
+
+## The effect of Humidity on the Bicycles rented
+# checking for the relationship
+ggplot(day, aes(x = hum, y = cnt)) +
+  geom_point(stat = "identity", color = "brown") +
+  geom_smooth(method = "lm") +
+  stat_regline_equation(formula = cnt ~ hum, position = "identity") +
+  labs(title = "The effect of Humidity on the Bicycles Rented", x = "Humidity", y = "Bicyces Rented")
+
+# Analyzing the relationship between Humidity and the Bicycles rented using linear model
+fit <- lm(cnt ~ hum)
+summary(fit)
+
+
+
 ## Visualization for Seasons
 season_counts <- day %>%
   group_by(season) %>%
@@ -137,12 +164,18 @@ ggplot(month_counts, aes(x = mnth, y = cnt, fill = mnth)) +
 
 
 ## Plotting the relationship between Wind speed and Bicycles Rented
-ggplot(day, aes(x = cnt, y = windspeed)) +
+ggplot(day, aes(x = windspeed, y = cnt)) +
   geom_point(stat = "identity", position = "identity", color = "brown") +
-  stat_regline_equation(formula = windspeed ~ cnt, position = "identity") +
+  stat_regline_equation(formula = cnt ~ windspeed, positsion = "identity") +
   geom_smooth(method = "lm") +
-  labs(title = "Relationship between the Winspeed and the Bicycles Rented", x = "bicycle Rented", y = "Windspeed")
+  labs(title = "Relationship between the Winspeed and the Bicycles Rented", x = "Windspeed", y = "Bicycle Rented")
 
 ## Performing the linear model analysis between the wind speed and the Bicycles Rented
-fit <- lm(windspeed ~ cnt)
+fit <- lm(cnt ~ windspeed)
 summary(fit)
+
+
+## Checking the ratio of Casual vs Registered Customers
+sum(casual)/(sum(registered) + sum(casual))
+
+sum(registered)/(sum(registered) + sum(casual))
