@@ -9,6 +9,8 @@ View(day)
 attach(day)
 str(day)
 library(dplyr)
+library(ggplot2)
+library(ggpubr)
 
 ## DATA CLEANING
 
@@ -26,7 +28,6 @@ day$weathersit <- as.factor(weathersit)
 ## ANALYSIS BEGINS
 ## Getting the five-figure summary
 summary(day)
-summary(day$mnth)
 
 ## Checking the effect of public holiday on the bicycles rented
 # grouping the data into two, i.e holiday and no holiday
@@ -49,7 +50,7 @@ weekday_group <- day %>%
   group_by(weekday) %>% 
   summarise(cnt = sum(cnt))
 
-# naming the levels of the Holiday
+# naming the levels of the Weekdays
 weekday_group$weekday <- factor(weekday_group$weekday, 
                                 levels = c(0, 1, 2, 3, 4, 5, 6), 
                                 labels = c("Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"))
@@ -58,6 +59,37 @@ weekday_group$weekday <- factor(weekday_group$weekday,
 ggplot(weekday_group, aes(x = weekday, y = cnt, fill = weekday)) +
   geom_bar(stat = "identity") +
   labs(x = "Days of the Week", y = "bicycle Rented", title = "bicycle Rented in each day of the week")
+
+
+## Visualizing the days that Casuals rent bike the most
+weekday_group <- day %>% 
+  group_by(weekday) %>% 
+  summarise(casual = sum(casual))
+
+# naming the levels of the Weekdays
+weekday_group$weekday <- factor(weekday_group$weekday, 
+                                levels = c(0, 1, 2, 3, 4, 5, 6), 
+                                labels = c("Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"))
+
+## visualization with barplot
+ggplot(weekday_group, aes(x = weekday, y = casual, fill = weekday)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Days of the Week", y = "bicycle Rented", title = "bicycle Rented in each day of the week by Casuals")
+
+## Visualizing the days that Registered Users rent bike the most
+weekday_group <- day %>% 
+  group_by(weekday) %>% 
+  summarise(registered = sum(registered))
+
+# naming the levels of the Weekdays
+weekday_group$weekday <- factor(weekday_group$weekday, 
+                                levels = c(0, 1, 2, 3, 4, 5, 6), 
+                                labels = c("Sun", "Mon", "Tue", "Wed", "Thur", "Fri", "Sat"))
+
+## visualization with barplot
+ggplot(weekday_group, aes(x = weekday, y = registered, fill = weekday)) +
+  geom_bar(stat = "identity") +
+  labs(x = "Days of the Week", y = "bicycle Rented", title = "bicycle Rented in each day of the week by Registered Users")
 
 
 ## Visualization of the working days vs the bicycles rented
@@ -76,6 +108,7 @@ ggplot(workingday_group, aes(x = workingday, y = cnt, fill = workingday)) +
   geom_bar(stat = "identity") +
   labs(x = "WorkingDay", y = "bicycle Rented", title = "Bicycles Rented vs Working Day/Not Working Day")
 
+
 ## The effect of the weather temperature on the Bicycles rented
 # checking for the relationship
 ggplot(day, aes(x = atemp, y = cnt)) +
@@ -87,6 +120,9 @@ ggplot(day, aes(x = atemp, y = cnt)) +
 # Analyzing the relationship between weather temperature and the Bicycles rented using linear model
 fit <- lm(cnt ~ atemp)
 summary(fit)
+
+## Performing the correlation test
+cor.test(atemp, cnt)
 
 
 ## The effect of Humidity on the Bicycles rented
@@ -101,6 +137,8 @@ ggplot(day, aes(x = hum, y = cnt)) +
 fit <- lm(cnt ~ hum)
 summary(fit)
 
+## Performing the correlation test
+cor.test(hum, cnt)
 
 
 ## Visualization for Seasons
@@ -114,16 +152,14 @@ season_counts$season <- factor(season_counts$season,
                                levels =  c(1, 2, 3, 4), 
                                labels =  c("Winter", "Spring", "Summer", "Fall"))
 
-season_counts
 
 
 ## Plot using ggplot
-library(ggplot2)
-library(ggpubr)
 
 ggplot(season_counts, aes(x = season, y = cnt, fill = season)) + 
   geom_bar(stat = "identity") +
   labs(x = "Seasons", y = "Total Bicycles Rented", title = "Total Bicycles rented in each Season")
+
 
 ## Visualization of the effect of weather conditions on the bicycles rented
 # grouping the wweathersit
@@ -145,7 +181,7 @@ ggplot(weathersit_group, aes(x = weathersit, y = cnt, fill = weathersit)) +
   labs(x = "Weather Condition", y = "bicycle Rented", title = "Effect of the weather condition on the Bicycles rented")
 
 
-## Visualization for Seasons
+## Visualization for Months
 
 month_counts <- day %>%
   group_by(mnth) %>%
@@ -166,7 +202,7 @@ ggplot(month_counts, aes(x = mnth, y = cnt, fill = mnth)) +
 ## Plotting the relationship between Wind speed and Bicycles Rented
 ggplot(day, aes(x = windspeed, y = cnt)) +
   geom_point(stat = "identity", position = "identity", color = "brown") +
-  stat_regline_equation(formula = cnt ~ windspeed, positsion = "identity") +
+  stat_regline_equation(formula = cnt ~ windspeed, position = "identity") +
   geom_smooth(method = "lm") +
   labs(title = "Relationship between the Winspeed and the Bicycles Rented", x = "Windspeed", y = "Bicycle Rented")
 
@@ -174,6 +210,8 @@ ggplot(day, aes(x = windspeed, y = cnt)) +
 fit <- lm(cnt ~ windspeed)
 summary(fit)
 
+## Performing the correlation test
+cor.test(windspeed, cnt)
 
 ## Checking the ratio of Casual vs Registered Customers
 sum(casual)/(sum(registered) + sum(casual))
